@@ -22,7 +22,7 @@ from utils.shell import run_cmd
 bp = Blueprint("binaries", __name__)
 
 
-@bp.route("/bin/version/<string:bin_name>")
+@bp.route("/version/<string:bin_name>")
 def binary_version(bin_name: str) -> Union[Response, tuple[Response, Literal[404]]]:
     """
     Obtiene la versión de un binario del sistema usando '--version'.
@@ -50,7 +50,7 @@ def binary_version(bin_name: str) -> Union[Response, tuple[Response, Literal[404
     })
 
 
-@bp.route("/bin/exists/<string:bin_name>")
+@bp.route("/exists/<string:bin_name>")
 def binary_exists(bin_name: str) -> Response:
     """
     Verifica si un binario está disponible en el sistema ($PATH).
@@ -68,7 +68,7 @@ def binary_exists(bin_name: str) -> Response:
     })
 
 
-@bp.route("/bin/install/<string:package_name>", methods=["POST"])
+@bp.route("/install/<string:package_name>", methods=["POST"])
 def install_package(package_name: str) -> Response:
     """
     Instala un paquete del sistema con apt.
