@@ -7,7 +7,6 @@ from routes.getters import (
     system,
     network,
     hardware,
-    security,
     gpio,
     events,
     guardian_scroll
