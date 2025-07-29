@@ -6,3 +6,5 @@ __pycache__/
 *.swp
 .venv/
 *.egg-info/
+.vscode/
+**/__pycache__/

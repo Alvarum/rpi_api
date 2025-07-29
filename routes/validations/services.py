@@ -18,31 +18,56 @@ bp = Blueprint(
     import_name=__name__
 )
 
-
-# test  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Solo se puede interactual con los servicios autorizados, los cual se
+# definen a continuación
 AUTHORIZED_SERVICES = {
     "nodered",
-    "ssh"
+    "ssh",
+    "vncserver",
 }
 
-def is_authorized_service(service: str) -> bool:
-    """Verifica si el servicio está autorizado."""
+# region aux
+def authorized_service(service: str) -> bool:
+    """
+    Verifica si el servicio está autorizado.
+    
+    :param service: Nombre del servicio
+    :return type: bool
+    """
     return service in AUTHORIZED_SERVICES
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
 
 
 # region Getters
+@bp.route("/authorized", methods=["GET"])
+def get_authorized_services() -> Response:
+    """
+    Obtiene los servicios autorizados.
+
+    :return type: Response
+    """
+    return jsonify({
+        "services": AUTHORIZED_SERVICES
+    })
+
+
 @bp.route("/<string:service_name>", methods=["GET"])
-def get_service_status(service_name: str) -> Response:
+def get_service_status(service_name: str) -> Union[Response, tuple[Response, Literal[404]]]:
     """
     Consulta el estado de un servicio del sistema usando systemctl.
 
     :param service_name: Nombre del servicio (ej: ssh, nodered)
     :return type: Response
     """
+    # Verifica si el servicio esta autorizado
+    if not authorized_service(service_name):
+        return jsonify({
+            "error": f"Servicio '{service_name}' no autorizado"
+        }), 404
+
+    # Obtiene el estado
     status: str = run_cmd(f"systemctl is-active {service_name}")
+
+    # Devuelve la respuesta
     return jsonify({
         "service": service_name,
         "status": status
@@ -58,6 +83,13 @@ def restart_service(service_name: str) -> Union[Response, tuple[Response, Litera
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica si el servicio esta autorizado
+    if not authorized_service(service_name):
+        return jsonify({
+            "error": f"Servicio '{service_name}' no autorizado"
+        }), 404
+
+    # Verifica si el servicio existe
     exists: str = run_cmd(
         f"systemctl list-unit-files | grep -w '{service_name}.service'"
     )
@@ -66,7 +98,10 @@ def restart_service(service_name: str) -> Union[Response, tuple[Response, Litera
             "error": f"Servicio '{service_name}' no encontrado"
         }), 404
 
+    # Reinicia el servicio
     result: str = run_cmd(f"sudo systemctl restart {service_name}")
+
+    # Devuelve la respuesta
     return jsonify({
         "service": service_name,
         "action": "restart",
@@ -82,6 +117,13 @@ def start_service(service_name: str) -> Union[Response, tuple[Response, Literal[
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica si el servicio esta autorizado
+    if not authorized_service(service_name):
+        return jsonify({
+            "error": f"Servicio '{service_name}' no autorizado"
+        }), 404
+
+    # Verifica si el servicio existe
     exists: str = run_cmd(
         f"systemctl list-unit-files | grep -w '{service_name}.service'"
     )
@@ -90,7 +132,10 @@ def start_service(service_name: str) -> Union[Response, tuple[Response, Literal[
             "error": f"Servicio '{service_name}' no encontrado"
         }), 404
 
+    # Inicia el servicio
     result: str = run_cmd(f"sudo systemctl start {service_name}")
+
+    # Devuelve la respuesta
     return jsonify({
         "service": service_name,
         "action": "start",
@@ -106,6 +151,12 @@ def stop_service(service_name: str) -> Union[Response, tuple[Response, Literal[4
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica si el servicio esta autorizado
+    if not authorized_service(service_name):
+        return jsonify({
+            "error": f"Servicio '{service_name}' no autorizado"
+        }), 404
+
     # Verifica si el servicio existe
     exists: str = run_cmd(
         f"systemctl list-unit-files | grep -w '{service_name}.service'"
@@ -136,6 +187,11 @@ def enable_service(service_name: str) -> Union[Response, tuple[Response, Literal
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    if not authorized_service(service_name):
+        return jsonify({
+            "error": f"Servicio '{service_name}' no autorizado"
+        }), 404
+
     # Verifica si el servicio existe
     exists: str = run_cmd(
         f"systemctl list-unit-files | grep -w '{service_name}.service'"
@@ -166,6 +222,12 @@ def disable_service(service_name: str) -> Union[Response, tuple[Response, Litera
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica si el servicio esta autorizado
+    if not authorized_service(service_name):
+        return jsonify({
+            "error": f"Servicio '{service_name}' no autorizado"
+        }), 404
+
     # Verifica si el servicio existe
     exists: str = run_cmd(
         f"systemctl list-unit-files | grep -w '{service_name}.service'"
@@ -186,28 +248,6 @@ def disable_service(service_name: str) -> Union[Response, tuple[Response, Litera
         "action": "disable",
         "result": result or "ok"
     })
-
-
-
-# region dog shit
-# @bp.route("/nodered")
-# def nodered_status():
-#     """
-#     Obtiene el estado del servicio nodered
-#     """
-#     return jsonify({
-#         "nodered": run_cmd("systemctl is-active nodered")
-#     })
-
-# @bp.route("/ssh")
-# def ssh_status():
-#     """
-#     Obtiene el estado del servicio ssh
-#     """
-#     return jsonify({
-#         "ssh": run_cmd("systemctl is-active ssh")
-#     })
-
 
 @bp.route("/processes")
 def processes():

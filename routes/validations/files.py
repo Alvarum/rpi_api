@@ -10,6 +10,11 @@ from utils.shell import run_cmd
 
 bp = Blueprint("validations", __name__)
 
+# Rutas no autorizadas
+NOT_AUTHORIZED_PATHS: list[str] = [
+    "/",
+]
+
 @bp.route("/directory/<path:dir_path>")
 def directory_exists(dir_path: str) -> Response:
     """

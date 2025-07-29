@@ -4,6 +4,11 @@ Comandos relacionados con binarios.
 - /bin/version/<string:bin_name>: Obtiene la versión de un binario
 - /bin/exists/<string:bin_name>: Verifica si un binario existe
 - /pkg/install/<string:package_name>: Instala un paquete del sistema
+
+ejemplos:
+- /bin/version/python3
+- /bin/exists/ffmpeg
+- /bin/install/nmap
 """
 
 # Librerias
@@ -63,7 +68,7 @@ def binary_exists(bin_name: str) -> Response:
     })
 
 
-@bp.route("/pkg/install/<string:package_name>", methods=["POST"])
+@bp.route("/bin/install/<string:package_name>", methods=["POST"])
 def install_package(package_name: str) -> Response:
     """
     Instala un paquete del sistema con apt.
