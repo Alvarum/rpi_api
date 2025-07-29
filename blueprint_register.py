@@ -9,9 +9,10 @@ from routes.getters import (
     hardware,
     security,
     gpio,
-    events
+    events,
+    guardian_scroll
 )
-from routes.validations import services
+from routes.validations import services, files, binaries
 
 def register_getters_blueprints(app: Flask) -> None:
     """
@@ -20,26 +21,17 @@ def register_getters_blueprints(app: Flask) -> None:
 
     :param Flask app: App de flask
     """
-    # Comandos relacionados con almacenamiento
+    # GETTERS
+    app.register_blueprint(guardian_scroll.bp, url_prefix="/guardian")
     app.register_blueprint(storage.bp, url_prefix="/storage")
-
-    # Comandos relacionados con el sistema
-    app.register_blueprint(system.bp, url_prefix="/system")
-
-    # Comandos relacionados con los servicios
-    app.register_blueprint(services.bp, url_prefix="/services")
-
-    # Comandos relacionados con la red
+    app.register_blueprint(system.bp, url_prefix="/system") 
     app.register_blueprint(network.bp, url_prefix="/network")
-
-    # Comandos relacionados con el hardware
     app.register_blueprint(hardware.bp, url_prefix="/hardware")
-
-    # Comandos relacionados con la seguridad
     app.register_blueprint(security.bp, url_prefix="/security")
-
-    # Comandos relacionados con el gpio
     app.register_blueprint(gpio.bp, url_prefix="/gpio")
-
-    # Comandos relacionados con los eventos
     app.register_blueprint(events.bp, url_prefix="/events")
+
+    # VALIDADORES
+    app.register_blueprint(files.bp, url_prefix="/files")
+    app.register_blueprint(binaries.bp, url_prefix="/binaries")
+    app.register_blueprint(services.bp, url_prefix="/services")
