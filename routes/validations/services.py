@@ -249,8 +249,8 @@ def disable_service(service_name: str) -> Union[Response, tuple[Response, Litera
         "result": result or "ok"
     })
 
-@bp.route("/processes")
-def processes():
-    return jsonify({
-        "processes": run_cmd("ps -eo pid,comm,%cpu,%mem --sort=-%cpu | head -n 10")
-    })
+# @bp.route("/processes")
+# def processes():
+#     return jsonify({
+#         "processes": run_cmd("ps -eo pid,comm,%cpu,%mem --sort=-%cpu | head -n 10")
+#     })
