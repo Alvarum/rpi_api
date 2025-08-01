@@ -5,7 +5,7 @@ solo con una consulta.
 """
 
 from flask import Blueprint, Response, jsonify
-from utils.shell import run_cmd
+from utils.utils import run_cmd, require_token
 
 bp = Blueprint("guardian", __name__)
 
@@ -14,6 +14,7 @@ def get_data():
     """
     Obtiene todos los datos que requiere Grid Guardian de la Raspberry Pi.
     """
+    require_token()
     return jsonify({
         "os": run_cmd("lsb_release -d | cut -f2"),
         "uptime": run_cmd("uptime -p"),
@@ -38,6 +39,9 @@ def get_data_onsteroid() -> Response:
     
     Realiza menos comandos que la versión anterior para hacer la función mas rapida
     """
+
+    require_token()
+
     # Información del sistema
     sysinfo = run_cmd(
         "lsb_release -d; uname -r; cat /proc/device-tree/model; uptime -p"

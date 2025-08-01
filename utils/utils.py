@@ -1,8 +1,21 @@
+"""
+Utilidades de la aplicación
+"""
+
 import subprocess
-from typing import Optional, List
+from os import environ
+from typing import Optional, List, Union
+from flask import request, abort
+from dotenv import load_dotenv
+
+# Carga las variables de entorno
+load_dotenv()
+
+# Obtiene la variable de entorno
+API_TOKEN = environ.get("API_TOKEN")
 
 
-def run_cmd(cmd: List[str], timeout: float = 5.0) -> Optional[str]:
+def run_cmd(cmd: Union[List[str], str], timeout: float = 5.0) -> Optional[str]:
     """
     Ejecuta un comando del sistema de forma segura (sin shell)
     y devuelve su salida como string.
@@ -18,8 +31,23 @@ def run_cmd(cmd: List[str], timeout: float = 5.0) -> Optional[str]:
             timeout=timeout
         )
         return output.decode("utf-8").strip()
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+    except (
+        subprocess.CalledProcessError,
+        subprocess.TimeoutExpired,
+        FileNotFoundError
+    ):
         return "error"
+
+
+def require_token():
+    """
+    Función de autenticación.
+
+    lee el header "X-API-TOKEN" del request y compara con la variable
+    de entorno, si no son iguales aborta la operación
+    """
+    if request.headers.get("X-API-TOKEN") != API_TOKEN:
+        abort(403)
 
 
 # def run_cmd(cmd: str) -> str:

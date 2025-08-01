@@ -10,7 +10,7 @@ Comandos para obtener e interactuar con servicios.
 from typing import Literal, Union
 from flask import Blueprint, jsonify
 from flask.wrappers import Response
-from utils.shell import run_cmd
+from utils.utils import run_cmd, require_token
 
 # Inicializa el blueprint
 bp = Blueprint(
@@ -45,6 +45,10 @@ def get_authorized_services() -> Response:
 
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
+    # Devuelve los servicios autorizados
     return jsonify({
         "services": AUTHORIZED_SERVICES
     })
@@ -58,6 +62,9 @@ def get_service_status(service_name: str) -> Union[Response, tuple[Response, Lit
     :param service_name: Nombre del servicio (ej: ssh, nodered)
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
     # Verifica si el servicio esta autorizado
     if not authorized_service(service_name):
         return jsonify({
@@ -83,6 +90,9 @@ def restart_service(service_name: str) -> Union[Response, tuple[Response, Litera
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
     # Verifica si el servicio esta autorizado
     if not authorized_service(service_name):
         return jsonify({
@@ -117,6 +127,9 @@ def start_service(service_name: str) -> Union[Response, tuple[Response, Literal[
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
     # Verifica si el servicio esta autorizado
     if not authorized_service(service_name):
         return jsonify({
@@ -151,6 +164,9 @@ def stop_service(service_name: str) -> Union[Response, tuple[Response, Literal[4
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
     # Verifica si el servicio esta autorizado
     if not authorized_service(service_name):
         return jsonify({
@@ -187,6 +203,10 @@ def enable_service(service_name: str) -> Union[Response, tuple[Response, Literal
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
+    # Verifica si el servicio esta autorizado
     if not authorized_service(service_name):
         return jsonify({
             "error": f"Servicio '{service_name}' no autorizado"
@@ -222,6 +242,9 @@ def disable_service(service_name: str) -> Union[Response, tuple[Response, Litera
     :param service_name: Nombre del servicio
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
     # Verifica si el servicio esta autorizado
     if not authorized_service(service_name):
         return jsonify({

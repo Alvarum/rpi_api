@@ -8,7 +8,7 @@ Comandos relacionados con el sistema.
 """
 
 from flask import Blueprint, jsonify
-from utils.shell import run_cmd
+from utils.utils import run_cmd, require_token
 
 bp = Blueprint("system", __name__)
 
@@ -17,6 +17,7 @@ def get_os():
     """
     Obtiene la version de la OS
     """
+    require_token()
     return jsonify({
         "os": run_cmd("lsb_release -d | cut -f2"),
     })
@@ -26,6 +27,7 @@ def get_uptime():
     """
     Obtiene el tiempo de uso del sistema
     """
+    require_token()
     return jsonify({
         "uptime": run_cmd("uptime -p")
     })
@@ -35,6 +37,7 @@ def get_kernel():
     """
     Obtiene la version del kernel
     """
+    require_token()
     return jsonify({
         "kernel": run_cmd("uname -r")
     })
@@ -44,12 +47,14 @@ def get_model():
     """
     Obtiene el modelo del dispositivo
     """
+    require_token()
     return jsonify({
         "model": run_cmd("cat /proc/device-tree/model")
     })
 
 @bp.route("/getall")
 def get_all():
+    require_token()
     return jsonify({
         "os": run_cmd("lsb_release -d | cut -f2"),
         "uptime": run_cmd("uptime -p"),

@@ -17,7 +17,7 @@ import re
 from typing import Literal, Union
 from flask import Blueprint, jsonify
 from flask.wrappers import Response
-from utils.shell import run_cmd
+from utils.utils import run_cmd, require_token
 
 # Inicializa el blueprint
 bp = Blueprint("binaries", __name__)
@@ -33,6 +33,9 @@ def binary_version(
     :param bin_name: Nombre del comando (ej: git, python2, ffmpeg)
     :return type: Response
     """
+    # Verifica el token
+    require_token()
+
     # Verifica si los parametros son validos
     if not re.match(r"^[\w.-]+$", bin_name):
         return jsonify({
@@ -86,6 +89,9 @@ def binary_exists(bin_name: str) -> Union[Response, tuple[Response, Literal[400]
     """
     Verifica si un binario está disponible en el sistema ($PATH).
     """
+    # Verifica el token
+    require_token()
+
     # Verifica si los parametros son validos
     if not re.match(r"^[\w.-]+$", bin_name):
         return jsonify({"error": "Nombre inválido"}), 400

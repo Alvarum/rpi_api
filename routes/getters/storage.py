@@ -9,7 +9,7 @@ Comandos relacionados con almacenamiento.
 
 # Importaciones
 from flask import Blueprint, jsonify
-from utils.shell import run_cmd
+from utils.utils import run_cmd, require_token
 
 
 # Inicializa el blueprint de almacenamiento en la app de flask
@@ -21,6 +21,7 @@ def total():
     """
     Obtiene el espacio total de la memoria
     """
+    require_token()
     return jsonify({
         "total": run_cmd("df -h / | awk 'NR==2{print $2}'"),
     })
@@ -41,6 +42,7 @@ def free():
     """
     Obtiene el espacio libre de la memoria
     """
+    require_token()
     return jsonify({
         "free": run_cmd("df -h / | awk 'NR==2{print $4}'"),
     })
@@ -51,6 +53,7 @@ def get_all():
     """
     Obtiene el espacio total, usado y libre
     """
+    require_token()
     return jsonify({
         "total": run_cmd("df -h / | awk 'NR==2{print $2}'"),
         "used": run_cmd("df -h / | awk 'NR==2{print $3}'"),

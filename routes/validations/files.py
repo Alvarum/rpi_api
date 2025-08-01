@@ -8,6 +8,7 @@ Comandos relacionados con validaciones de archivos.
 import os
 from typing import Literal, Union
 from flask import Blueprint, Response, jsonify
+from utils.utils import require_token
 
 bp: Blueprint = Blueprint("validations", __name__)
 
@@ -35,6 +36,9 @@ def directory_exists(dir_path: str) -> Union[Response, tuple[Response, Literal[4
     :param dir_path: Ruta del directorio relativa a CWD del servidor.
     :return: True si existe, False si no.
     """
+
+    # Verifica el token
+    require_token()
 
     # Verifica si la ruta es válida
     if not dir_path or len(dir_path) > 1024 or "\x00" in dir_path:
@@ -67,6 +71,8 @@ def file_exists(file_path: str) -> Union[Response, tuple[Response, Literal[400]]
     :param file_path: Ruta del archivo relativa o absoluta.
     :return: True si existe, False si no.
     """
+    # Verifica el token
+    require_token()
 
     # Verifica si la ruta es válida
     if not file_path or len(file_path) > 1024 or "\x00" in file_path:
