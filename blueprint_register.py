@@ -13,6 +13,8 @@ from routes.getters import (
 )
 from routes.validations import services, files, binaries
 
+
+
 def register_getters_blueprints(app: Flask) -> None:
     """
     Registra los blueprints en la app de flask para que puedan ser

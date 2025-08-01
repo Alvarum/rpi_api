@@ -1,21 +1,63 @@
 """
-Comandos relacionados con el control de gpio
+Rutas para controlar pines GPIO
 """
-from pathlib import Path
-from flask import Blueprint, jsonify
+
+# Librerias
+from typing import List, Optional, Union
+from flask import Blueprint, jsonify, request
+from utils.gpio import GPIOController  # importa tu clase
+from utils.utils import require_token
 
 # Inicializa el blueprint
 bp: Blueprint = Blueprint("gpio", __name__)
 
-# Ruta absoluta del archivo actual
-BASE_DIR: Path = Path(__file__).resolve().parent
+@bp.route("/gpio/<action>", methods=["POST"])
+def control_gpio(action: str):
+    """
+    Controla pines GPIO mediante HTTP.
 
-# Sube dos niveles hasta la raíz del proyecto
-PROJECT_ROOT: Path = BASE_DIR.parent.parent
+    Requiere JSON en el body con `pins: List[int]`
+    """
 
-# Arma la ruta al archivo gpio.py
-GPIO_CONTROL_PATH: Path = (PROJECT_ROOT, "utils", "gpio.py")
+    # Verifica el token
+    require_token()
 
-@bp.route("/off/<string:gpio>", methods=["POST"])
-def gpio_off(gpio: str):
-    ...
+    # Obtiene los datos
+    data = request.get_json(force=True)
+
+    # Obtiene los pines del JSON
+    pins: Optional[Union[List[int], int]] = data.get("pins", [])
+
+    # Verifica el formato
+    if not isinstance(pins, list):
+        return jsonify(
+            {"error": "Formato inválido. Se requiere 'pins': List[int]"}
+        ), 400
+
+    try:
+        # Realiza la operación
+        with GPIOController(pins) as gpio:
+            if action == "off":
+                success = gpio.change_state("off")
+            elif action == "on":
+                success = gpio.change_state("on")
+            elif action == "reboot":
+                success = gpio.reboot()
+            elif action == "test":
+                if len(pins) != 1:
+                    return jsonify(
+                        {"error": "Test requiere exactamente un pin."}
+                    ), 400
+                success = gpio.test(pins[0])
+            # Acción no reconocida
+            else:
+                return jsonify({"error": f"Acción '{action}' no válida"}), 400
+    except RuntimeError as e:
+        return jsonify({"error": str(e)}), 423  # 423 Locked
+
+    # Si no registra el exito, devuelve un error
+    if not success:
+        return jsonify({"error": "Fallo la operación"}), 500
+
+    # Si llega hasta aca, todo va bien
+    return jsonify({"status": "ok", "action": action, "pins": pins}), 200

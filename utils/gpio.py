@@ -148,6 +148,7 @@ class GPIOController:
             logging.error("Error al configurar GPIOs: %s", e)
             return False
 
+
     def change_state(
         self,
         state: Literal["on", "off"],

@@ -1,63 +1,82 @@
 """
 Comandos relacionados con el sistema.
 
-- /os: Obtiene la version de la OS
+- /os: Obtiene la versión del sistema operativo
 - /uptime: Obtiene el tiempo de uso del sistema
-- /kernel: Obtiene la version del kernel
+- /kernel: Obtiene la versión del kernel
 - /model: Obtiene el modelo del dispositivo
+- /getall: Devuelve todos los anteriores
 """
 
+# Librerias
 from flask import Blueprint, jsonify
 from utils.utils import run_cmd, require_token
 
+# Inicializa el blueprint
 bp = Blueprint("system", __name__)
+
+# Mapeo de campos a comandos, mas pythoneano para
+# dejar el codigo bonito
+_SYSTEM_COMMANDS: dict[str, str] = {
+    "os": "lsb_release -d | cut -f2",
+    "uptime": "uptime -p",
+    "kernel": "uname -r",
+    "model": "cat /proc/device-tree/model"
+}
+
+
+def get_info(field: str) -> str:
+    """
+    Ejecuta el comando asociado a un campo del sistema.
+
+    :param field: Campo solicitado (os, uptime, kernel, model)
+    :type field: str
+    :return: Resultado del comando como string
+    :rtype: str
+    """
+    return run_cmd(_SYSTEM_COMMANDS[field])
+
 
 @bp.route("/os")
 def get_os():
     """
-    Obtiene la version de la OS
+    Devuelve la descripción del sistema operativo.
     """
     require_token()
-    return jsonify({
-        "os": run_cmd("lsb_release -d | cut -f2"),
-    })
+    return jsonify({"os": get_info("os")})
+
 
 @bp.route("/uptime")
 def get_uptime():
     """
-    Obtiene el tiempo de uso del sistema
+    Devuelve el tiempo de uso desde el último reinicio.
     """
     require_token()
-    return jsonify({
-        "uptime": run_cmd("uptime -p")
-    })
+    return jsonify({"uptime": get_info("uptime")})
+
 
 @bp.route("/kernel")
 def get_kernel():
     """
-    Obtiene la version del kernel
+    Devuelve la versión del kernel Linux.
     """
     require_token()
-    return jsonify({
-        "kernel": run_cmd("uname -r")
-    })
+    return jsonify({"kernel": get_info("kernel")})
+
 
 @bp.route("/model")
 def get_model():
     """
-    Obtiene el modelo del dispositivo
+    Devuelve el modelo del dispositivo (ej. Raspberry Pi).
     """
     require_token()
-    return jsonify({
-        "model": run_cmd("cat /proc/device-tree/model")
-    })
+    return jsonify({"model": get_info("model")})
+
 
 @bp.route("/getall")
 def get_all():
+    """
+    Devuelve toda la información del sistema en un solo JSON.
+    """
     require_token()
-    return jsonify({
-        "os": run_cmd("lsb_release -d | cut -f2"),
-        "uptime": run_cmd("uptime -p"),
-        "kernel": run_cmd("uname -r"),
-        "model": run_cmd("cat /proc/device-tree/model")
-    })
+    return jsonify({k: get_info(k) for k in _SYSTEM_COMMANDS})
