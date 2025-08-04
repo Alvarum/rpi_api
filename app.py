@@ -3,7 +3,7 @@ API para obtener información de un Raspberry Pi con Raspberry OS.
 """
 
 from flask import Flask
-from blueprint_register import register_getters_blueprints
+from utils.blueprint_register import register_getters_blueprints
 
 app = Flask(__name__)
 register_getters_blueprints(app)
