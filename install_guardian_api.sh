@@ -46,7 +46,7 @@ User=pi
 WantedBy=multi-user.target
 EOF
 
-# Recarga systemd, habilitaa y arranca el servicio
+# Recarga systemd, habilita y arranca el servicio
 echo "[+] Recargando systemd y habilitando servicio..."
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
