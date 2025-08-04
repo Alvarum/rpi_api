@@ -63,7 +63,26 @@ def run_cmd(cmd: str) -> str:
     """
     try:
         return subprocess.check_output(
-            cmd, shell=True, stderr=subprocess.DEVNULL
+            cmd,
+            shell=True,
+            stderr=subprocess.DEVNULL
         ).decode("utf-8").strip()
     except subprocess.CalledProcessError:
         return "error"
+
+def run_cmd_raiser(cmd: str) -> str:
+    """
+    Ejecuta un comando en el sistema y retorna la salida como string.
+
+    :param cmd: Comando a ejecutar.
+    :return: Salida del comando o "error" si falla.
+    """
+    # pylint: disable=W0719
+    try:
+        return subprocess.check_output(
+            cmd,
+            shell=True,
+            stderr=subprocess.DEVNULL
+        ).decode("utf-8").strip()
+    except Exception as e:
+        raise Exception from e

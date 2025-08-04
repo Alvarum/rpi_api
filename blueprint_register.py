@@ -11,8 +11,8 @@ from routes.getters import (
     events,
     guardian_scroll
 )
+from routes.actions import gpiocontrol, power
 from routes.validations import services, files, binaries
-
 
 
 def register_getters_blueprints(app: Flask) -> None:
@@ -35,3 +35,7 @@ def register_getters_blueprints(app: Flask) -> None:
     app.register_blueprint(files.bp, url_prefix="/files")
     app.register_blueprint(binaries.bp, url_prefix="/binaries")
     app.register_blueprint(services.bp, url_prefix="/services")
+
+    # ACTIONS
+    app.register_blueprint(gpiocontrol.bp, url_prefix="/gpiocontrol")
+    app.register_blueprint(power.bp, url_prefix="/power")

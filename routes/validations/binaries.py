@@ -23,7 +23,7 @@ from utils.utils import run_cmd, require_token
 bp = Blueprint("binaries", __name__)
 
 
-@bp.route("/version/<string:bin_name>")
+@bp.route("/version/<string:bin_name>", methods=["GET"])
 def binary_version(
     bin_name: str
 ) -> Union[Response, tuple[Response, Union[Literal[400], Literal[404]]]]:
@@ -84,7 +84,7 @@ def binary_version(
 #     })
 
 
-@bp.route("/exists/<string:bin_name>")
+@bp.route("/exists/<string:bin_name>", methods=["GET"])
 def binary_exists(bin_name: str) -> Union[Response, tuple[Response, Literal[400]]]:
     """
     Verifica si un binario está disponible en el sistema ($PATH).

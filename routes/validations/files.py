@@ -28,7 +28,7 @@ def is_safe_path(path: str) -> bool:
     return True
 
 
-@bp.route("/directory/<path:dir_path>")
+@bp.route("/directory/<path:dir_path>", methods=["GET"])
 def directory_exists(dir_path: str) -> Union[Response, tuple[Response, Literal[400]]]:
     """
     Verifica si un directorio existe.
@@ -63,7 +63,7 @@ def directory_exists(dir_path: str) -> Union[Response, tuple[Response, Literal[4
     return jsonify({"exists": exists})
 
 
-@bp.route("/file/<path:file_path>")
+@bp.route("/file/<path:file_path>", methods=["GET"])
 def file_exists(file_path: str) -> Union[Response, tuple[Response, Literal[400]]]:
     """
     Verifica si un archivo existe.
