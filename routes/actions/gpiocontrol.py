@@ -9,9 +9,9 @@ from utils.gpio import GPIOController  # importa tu clase
 from utils.utils import require_token
 
 # Inicializa el blueprint
-bp: Blueprint = Blueprint("gpio", __name__)
+bp: Blueprint = Blueprint("gpiocontrol", __name__)
 
-@bp.route("/gpio/<action>", methods=["POST"])
+@bp.route("/<action>", methods=["POST"])
 def control_gpio(action: str):
     """
     Controla pines GPIO mediante HTTP.
