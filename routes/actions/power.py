@@ -19,14 +19,15 @@ bp: Blueprint = Blueprint("power", __name__)
 
 # Lista de comandos de reinicio a intentar
 REBOOT_COMMANDS: list[str] = [
-    "sudo systemctl --force --force reboot",
-    "sudo shutdown -r +1",
+    "sudo shutdown -r now",
     "sudo reboot",
-    "sudo init 6"
+    "sudo init 6",
+    # OJO no abusar de este comando, mata tarjetas SD
+    "sudo systemctl --force --force reboot",
 ]
 
 
-@bp.route("/reboot", methods=["POST"])
+@bp.route("/reboot", methods=["GET"])
 def reboot() -> Union[Response, tuple[Response, Literal[500]]]:
     """
     Reinicia la Raspberry localmente.

@@ -60,6 +60,8 @@ class GPIOController:
         """
         # Obtiene los pines con los que se va a trabajar
         self.pins: List[int] = pins
+        if not self.pins:
+            raise ValueError("Debes proporcionar al menos un pin.")
 
         # Paths
         self.logs_path: Path = Path(
@@ -70,8 +72,8 @@ class GPIOController:
         )
 
         # Configuraciones
-        self._configure_logging()
         self._check_and_create_log_dir()
+        self._configure_logging()
         self._acquire_lock()
         self._setup_gpio()
 
@@ -115,8 +117,11 @@ class GPIOController:
     def _check_and_create_log_dir(self) -> None:
         """Crea el directorio de logs si no existe."""
         if not self.logs_path.exists():
-            self.logs_path.mkdir(parents=True)
-            logging.info("Carpeta de logs creada: %s", self.logs_path)
+            try:
+                self.logs_path.mkdir(parents=True, exist_ok=True)
+                print(f"Directorio creado: {self.logs_path}")
+            except Exception as e:
+                raise RuntimeError(f"No se pudo crear el directorio de logs: {e}") from e
 
 
     def _acquire_lock(self) -> None:
