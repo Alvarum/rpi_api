@@ -77,6 +77,7 @@ class GPIOController:
         self._acquire_lock()
         self._setup_gpio()
 
+
     def __enter__(self) -> "GPIOController":
         """
         Permite el uso del controlador como contexto.

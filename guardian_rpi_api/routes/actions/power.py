@@ -12,7 +12,7 @@ from time import sleep
 from typing import Literal, Union
 from flask import Blueprint, jsonify
 from flask.wrappers import Response
-from utils.utils import require_token, run_cmd_raiser
+from guardian_rpi_api.utils.utils import require_token, run_cmd_raiser
 
 # Inicializa el blueprint
 bp: Blueprint = Blueprint("power", __name__)

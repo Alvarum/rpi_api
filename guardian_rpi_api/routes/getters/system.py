@@ -10,7 +10,7 @@ Comandos relacionados con el sistema.
 
 # Librerias
 from flask import Blueprint, jsonify
-from utils.utils import run_cmd, require_token
+from guardian_rpi_api.utils.utils import run_cmd, require_token
 
 # Inicializa el blueprint
 bp = Blueprint("system", __name__)

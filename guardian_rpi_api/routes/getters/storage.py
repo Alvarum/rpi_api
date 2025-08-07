@@ -8,7 +8,7 @@ Comandos relacionados con almacenamiento.
 """
 
 from flask import Blueprint, jsonify
-from utils.utils import run_cmd, require_token
+from guardian_rpi_api.utils.utils import run_cmd, require_token
 
 bp = Blueprint("storage", __name__)
 

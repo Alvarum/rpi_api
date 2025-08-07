@@ -8,7 +8,7 @@ Comandos relacionados con validaciones de archivos.
 import os
 from typing import Literal, Union
 from flask import Blueprint, Response, jsonify
-from utils.utils import require_token
+from guardian_rpi_api.utils.utils import require_token
 
 bp: Blueprint = Blueprint("validations", __name__)
 

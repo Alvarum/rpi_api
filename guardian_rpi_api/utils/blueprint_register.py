@@ -1,26 +1,17 @@
-"""
-Registra los blueprints en la app
-"""
+from __future__ import annotations
+
 from flask import Flask
-from routes.getters import (
-    storage,
-    system,
-    network,
-    hardware,
-    gpio,
-    events,
-    guardian_scroll
+
+from guardian_rpi_api.routes.getters import (
+    storage, system, network, hardware, gpio, events, guardian_scroll,
 )
-from routes.actions import gpiocontrol, power
-from routes.validations import services, files, binaries
+from guardian_rpi_api.routes.actions import gpiocontrol, power
+from guardian_rpi_api.routes.validations import services, files, binaries
 
 
 def register_getters_blueprints(app: Flask) -> None:
     """
-    Registra los blueprints en la app de flask para que puedan ser
-    accedidos y usados.
-
-    :param Flask app: App de flask
+    Registra blueprints (GETTERS/VALIDATIONS/ACTIONS).
     """
     # GETTERS
     app.register_blueprint(guardian_scroll.bp, url_prefix="/guardian")
@@ -31,7 +22,7 @@ def register_getters_blueprints(app: Flask) -> None:
     app.register_blueprint(gpio.bp, url_prefix="/gpio")
     app.register_blueprint(events.bp, url_prefix="/events")
 
-    # VALIDADORES
+    # VALIDATIONS
     app.register_blueprint(files.bp, url_prefix="/files")
     app.register_blueprint(binaries.bp, url_prefix="/binaries")
     app.register_blueprint(services.bp, url_prefix="/services")
