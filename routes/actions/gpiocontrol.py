@@ -5,8 +5,8 @@ Rutas para controlar pines GPIO
 # Librerias
 from typing import List, Optional, Union
 from flask import Blueprint, jsonify, request
-from guardian_rpi_api.utils.gpio import GPIOController
-from guardian_rpi_api.utils.utils import require_token
+from utils.gpio import GPIOController
+from utils.utils import require_token
 
 # Inicializa el blueprint
 bp: Blueprint = Blueprint("gpiocontrol", __name__)

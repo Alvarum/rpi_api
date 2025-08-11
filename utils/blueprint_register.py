@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from flask import Flask
 
-from guardian_rpi_api.routes.getters import (
+from routes.getters import (
     storage, system, network, hardware, gpio, events, guardian_scroll,
 )
-from guardian_rpi_api.routes.actions import gpiocontrol, power
-from guardian_rpi_api.routes.validations import services, files, binaries
+from routes.actions import gpiocontrol, power
+from routes.validations import services, files, binaries
 
 
 def register_getters_blueprints(app: Flask) -> None:

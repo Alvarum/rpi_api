@@ -10,9 +10,10 @@ from typing import Final
 
 from flask import Flask, Response, jsonify
 
-from guardian_rpi_api import __version__
-from guardian_rpi_api.config import NetworkConfig, load_settings
-from guardian_rpi_api.utils.blueprint_register import register_getters_blueprints
+from config import NetworkConfig, load_settings
+from utils.blueprint_register import register_getters_blueprints
+
+from . import __version__
 
 # Formato de los logs
 LOG_FMT: Final[str] = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -49,7 +50,7 @@ def create_app() -> Flask:
 
 def main() -> None:
     """
-    Entrypoint: `guardian-rpi-api` o `python -m guardian_rpi_api.app`.
+    Entrypoint: `guardian-rpi-api` o `python -m app`.
     """
     # Configura el logging
     logging.basicConfig(level=logging.INFO, format=LOG_FMT)

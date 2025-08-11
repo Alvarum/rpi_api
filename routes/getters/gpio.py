@@ -1,5 +1,5 @@
 from flask import Blueprint, Response, jsonify
-from guardian_rpi_api.utils.utils import run_cmd, require_token
+from utils.utils import run_cmd, require_token
 
 bp = Blueprint("gpio", __name__)
 

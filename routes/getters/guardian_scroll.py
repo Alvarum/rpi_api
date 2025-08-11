@@ -16,7 +16,7 @@ from typing import Final
 
 from flask import Blueprint, Response, jsonify
 
-from guardian_rpi_api.utils.utils import require_token, run_cmd
+from utils.utils import require_token, run_cmd
 
 # pylint: disable=W0718
 
@@ -35,9 +35,11 @@ _CPUFREQ_MAX: Final[Path] = Path(
 )
 _MEMINFO: Final[Path] = Path("/proc/meminfo")
 
+@bp.before_request
+def _auth() -> None:
+    require_token()
 
 # region Helpers
-
 def _clean(s: str) -> str:
     """Colapsa espacios, quita NUL y recorta."""
     return " ".join(s.replace("\x00", " ").split()).strip()
@@ -99,11 +101,9 @@ def _os_description() -> str:
         if out != "error" and ":" in out:
             return _clean(out.split(":", 1)[1])
         return "unknown"
-
 # endregion
 
 # region Getters
-
 def _kernel() -> str:
     try:
         u = os.uname()
@@ -175,9 +175,22 @@ def _ram_info() -> dict[str, str]:
             "total": _human_bytes(total),
         }
     except Exception:
-        # Fallback tosco
-        out = run_cmd("free -h | grep Mem | awk '{print $3\"/\"$2}'")
-        return {"used_total": out if out != "error" else "unknown"}
+        out = run_cmd("free -b")
+        if out != "error":
+            try:
+                for line in out.splitlines():
+                    if line.startswith("Mem:") or line.lower().startswith("mem:"):
+                        parts = [p for p in line.split() if p]
+                        total_b = int(parts[1])
+                        used_b = int(parts[2]) if len(parts) > 2 else 0
+                        return {
+                            "used": _human_bytes(used_b),
+                            "total": _human_bytes(total_b),
+                        }
+            except Exception:
+                pass
+        return {"used_total": "unknown"}
+
 
 
 def _cpu_usage_pct(sample_sec: float = 0.2) -> str:
@@ -200,10 +213,25 @@ def _cpu_usage_pct(sample_sec: float = 0.2) -> str:
         usage = 0.0 if dtotal <= 0 else (1.0 - didle / dtotal) * 100.0
         return f"{usage:.0f}%"
     except Exception:
-        out = run_cmd(
-            "top -bn1 | grep 'Cpu(s)' | awk '{print $2+$4}'"
-        )
-        return f"{float(out):.0f}%" if out != "error" else "error"
+        out = run_cmd("top -bn1")
+        if out != "error":
+            try:
+                for ln in out.splitlines():
+                    if "Cpu(s)" in ln or "CPU:" in ln:
+                        txt = ln.replace(",", " ")
+                        fields = txt.split()
+                        idle = None
+                        for i, tok in enumerate(fields):
+                            if tok.endswith("%id"):
+                                val = fields[i - 1].strip("%")
+                                idle = float(val)
+                                break
+                        if idle is not None:
+                            usage = 100.0 - idle
+                            return f"{usage:.0f}%"
+            except Exception:
+                pass
+        return "error"
 
 
 def _cpu_freq() -> str:
@@ -223,9 +251,23 @@ def _cpu_freq() -> str:
             return f"{cur:.0f} MHz"
     except Exception:
         pass
-    # Fallback muy básico
-    out = run_cmd("lscpu | grep 'MHz' | awk '{print $NF}'")
-    return f"{float(out):.0f} MHz" if out != "error" else "unknown"
+    out = run_cmd("lscpu")
+    if out != "error":
+        try:
+            cur = None
+            mx = None
+            for ln in out.splitlines():
+                if "CPU max MHz" in ln:
+                    mx = float(ln.split(":", 1)[1].strip())
+                elif "CPU MHz" in ln:
+                    cur = float(ln.split(":", 1)[1].strip())
+            if cur and mx:
+                return f"{cur:.0f}/{mx:.0f} MHz"
+            if cur:
+                return f"{cur:.0f} MHz"
+        except Exception:
+            pass
+    return "unknown"
 
 
 def _cpu_cores() -> int:
@@ -256,10 +298,6 @@ def _py2_version() -> str:
     out = run_cmd("python2 --version 2>&1")
     return _clean(out) if out != "error" else "error"
 
-
-@bp.before_request
-def _auth() -> None:
-    require_token()
 
 
 @bp.get("/data")
@@ -307,7 +345,7 @@ def get_data() -> Response:
 # """
 
 # from flask import Blueprint, Response, jsonify
-# from guardian_rpi_api.utils.utils import run_cmd, require_token
+# from utils.utils import run_cmd, require_token
 
 # bp = Blueprint("guardian", __name__)
 

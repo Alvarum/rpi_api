@@ -2,6 +2,7 @@ import hmac
 import shlex
 import subprocess
 from os import environ
+from typing import Literal, Union
 from flask import request, abort
 
 API_TOKEN = environ.get("API_TOKEN")
@@ -21,7 +22,7 @@ def require_token() -> None:
         abort(403)
 
 
-def run_cmd(cmd: str, timeout: float = 5.0) -> str:
+def run_cmd(cmd: str, timeout: float = 5.0) -> Union[str, Literal["error"]]:
     """
     Ejecuta un comando de forma segura (sin shell).
 
