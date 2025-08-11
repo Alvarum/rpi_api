@@ -8,8 +8,9 @@ Comandos relacionados con almacenamiento.
 """
 
 from flask import Blueprint, jsonify
-from utils.utils import run_cmd, require_token
+from utils.utils import run_cmd
 
+# Inicializa el blueprint
 bp = Blueprint("storage", __name__)
 
 
@@ -30,7 +31,6 @@ def total():
     """
     Obtiene el espacio total de la memoria
     """
-    require_token()
     return jsonify({"total": get_storage_value(2)})
 
 
@@ -39,7 +39,6 @@ def used():
     """
     Obtiene el espacio usado de la memoria
     """
-    require_token()
     return jsonify({"used": get_storage_value(3)})
 
 
@@ -48,7 +47,6 @@ def free():
     """
     Obtiene el espacio libre de la memoria
     """
-    require_token()
     return jsonify({"free": get_storage_value(4)})
 
 
@@ -57,7 +55,6 @@ def get_all():
     """
     Obtiene el espacio total, usado y libre de la memoria
     """
-    require_token()
     return jsonify({
         "total": get_storage_value(2),
         "used": get_storage_value(3),

@@ -12,7 +12,7 @@ from time import sleep
 from typing import Literal, Union
 from flask import Blueprint, jsonify
 from flask.wrappers import Response
-from utils.utils import require_token, run_cmd_raiser
+from utils.utils import run_cmd_raiser
 
 # Inicializa el blueprint
 bp: Blueprint = Blueprint("power", __name__)
@@ -37,7 +37,6 @@ def reboot() -> Union[Response, tuple[Response, Literal[500]]]:
     :return: JSON con resultado de la operación
     :rtype: Union[Response, tuple[Response, Literal[500]]]
     """
-    require_token()
 
     for command in REBOOT_COMMANDS:
         try:

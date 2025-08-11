@@ -11,7 +11,7 @@ Consultas relacionadas con información de hardware.
 
 # Librerias
 from flask import Blueprint, jsonify
-from utils.utils import run_cmd, require_token
+from utils.utils import run_cmd
 
 # Inicializa el blueprint
 bp = Blueprint("hardware", __name__)
@@ -48,7 +48,6 @@ def cpu_usage():
     """
     Devuelve el uso actual de CPU en porcentaje.
     """
-    require_token()
     return jsonify({"cpu_usage": get_info("cpu_usage")})
 
 
@@ -57,7 +56,6 @@ def temperature():
     """
     Devuelve la temperatura actual del sistema en °C.
     """
-    require_token()
     return jsonify({"temp": get_info("temp")})
 
 
@@ -66,7 +64,6 @@ def ram():
     """
     Devuelve la memoria RAM usada/total en formato legible.
     """
-    require_token()
     return jsonify({"ram": get_info("ram")})
 
 
@@ -75,7 +72,6 @@ def cpu_cores():
     """
     Devuelve el número total de núcleos del procesador.
     """
-    require_token()
     return jsonify({"cpu_cores": get_info("cpu_cores")})
 
 
@@ -84,7 +80,6 @@ def cpu_freq():
     """
     Devuelve la frecuencia actual del procesador (MHz).
     """
-    require_token()
     return jsonify({"cpu_freq": get_info("cpu_freq")})
 
 
@@ -93,5 +88,4 @@ def get_all():
     """
     Devuelve todos los recursos de hardware en una sola respuesta.
     """
-    require_token()
     return jsonify({k: get_info(k) for k in _HARDWARE_COMMANDS})

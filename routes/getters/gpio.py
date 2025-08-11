@@ -1,5 +1,5 @@
 from flask import Blueprint, Response, jsonify
-from utils.utils import run_cmd, require_token
+from utils.utils import run_cmd
 
 bp = Blueprint("gpio", __name__)
 
@@ -8,7 +8,6 @@ def gpio_status() -> Response:
     """
     Obtiene el estado de los pines GPIO
     """
-    require_token()
     return jsonify({
         "values": run_cmd("gpio readall"),
         "bcm_board": run_cmd("gpio readall | head -n 1")

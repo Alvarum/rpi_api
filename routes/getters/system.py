@@ -10,7 +10,7 @@ Comandos relacionados con el sistema.
 
 # Librerias
 from flask import Blueprint, jsonify
-from utils.utils import run_cmd, require_token
+from utils.utils import run_cmd
 
 # Inicializa el blueprint
 bp = Blueprint("system", __name__)
@@ -42,7 +42,6 @@ def get_os():
     """
     Devuelve la descripción del sistema operativo.
     """
-    require_token()
     return jsonify({"os": get_info("os")})
 
 
@@ -51,7 +50,6 @@ def get_uptime():
     """
     Devuelve el tiempo de uso desde el último reinicio.
     """
-    require_token()
     return jsonify({"uptime": get_info("uptime")})
 
 
@@ -60,7 +58,6 @@ def get_kernel():
     """
     Devuelve la versión del kernel Linux.
     """
-    require_token()
     return jsonify({"kernel": get_info("kernel")})
 
 
@@ -69,7 +66,6 @@ def get_model():
     """
     Devuelve el modelo del dispositivo (ej. Raspberry Pi).
     """
-    require_token()
     return jsonify({"model": get_info("model")})
 
 
@@ -78,5 +74,4 @@ def get_all():
     """
     Devuelve toda la información del sistema en un solo JSON.
     """
-    require_token()
     return jsonify({k: get_info(k) for k in _SYSTEM_COMMANDS})

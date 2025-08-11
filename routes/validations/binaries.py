@@ -17,7 +17,7 @@ import re
 from typing import Literal, Union
 from flask import Blueprint, jsonify
 from flask.wrappers import Response
-from utils.utils import run_cmd, require_token
+from utils.utils import run_cmd
 
 # Inicializa el blueprint
 bp = Blueprint("binaries", __name__)
@@ -33,9 +33,6 @@ def binary_version(
     :param bin_name: Nombre del comando (ej: git, python2, ffmpeg)
     :return type: Response
     """
-    # Verifica el token
-    require_token()
-
     # Verifica si los parametros son validos
     if not re.match(r"^[\w.-]+$", bin_name):
         return jsonify({
@@ -66,32 +63,11 @@ def binary_version(
     })
 
 
-# @bp.route("/exists/<string:bin_name>")
-# def binary_exists(bin_name: str) -> Response:
-#     """
-#     Verifica si un binario está disponible en el sistema ($PATH).
-
-#     :param bin_name: Nombre del binario (ej: git, curl, ffmpeg)
-#     :return type: Response
-#     """
-#     # Verifica si el binario existe
-#     exists: str = run_cmd(f"command -v {bin_name}")
-
-#     # Devuelve la respuesta
-#     return jsonify({
-#         "binary": bin_name,
-#         "exists": bool(exists and exists != "error")
-#     })
-
-
 @bp.route("/exists/<string:bin_name>", methods=["GET"])
 def binary_exists(bin_name: str) -> Union[Response, tuple[Response, Literal[400]]]:
     """
     Verifica si un binario está disponible en el sistema ($PATH).
     """
-    # Verifica el token
-    require_token()
-
     # Verifica si los parametros son validos
     if not re.match(r"^[\w.-]+$", bin_name):
         return jsonify({"error": "Nombre inválido"}), 400
@@ -108,6 +84,22 @@ def binary_exists(bin_name: str) -> Union[Response, tuple[Response, Literal[400]
         "exists": bool(result and result != "error")
     })
 
+# @bp.route("/exists/<string:bin_name>")
+# def binary_exists(bin_name: str) -> Response:
+#     """
+#     Verifica si un binario está disponible en el sistema ($PATH).
+
+#     :param bin_name: Nombre del binario (ej: git, curl, ffmpeg)
+#     :return type: Response
+#     """
+#     # Verifica si el binario existe
+#     exists: str = run_cmd(f"command -v {bin_name}")
+
+#     # Devuelve la respuesta
+#     return jsonify({
+#         "binary": bin_name,
+#         "exists": bool(exists and exists != "error")
+#     })
 
 # @bp.route("/install/<string:package_name>", methods=["POST"])
 # def install_package(package_name: str) -> Response:

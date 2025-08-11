@@ -6,27 +6,29 @@ solo con una consulta.
 """
 
 from __future__ import annotations
-
 import os
 import platform
 import shutil
 import time
 from pathlib import Path
 from typing import Final
-
 from flask import Blueprint, Response, jsonify
-
-from utils.utils import require_token, run_cmd
+from utils.utils import run_cmd
 
 # pylint: disable=W0718
 
+# Inicializa el blueprint
 bp: Blueprint = Blueprint("guardian", __name__)
 
+# Comandos de interes
 _OS_RELEASE: Final[Path] = Path("/etc/os-release")
 _DT_MODEL: Final[Path] = Path("/proc/device-tree/model")
 _UPTIME: Final[Path] = Path("/proc/uptime")
 _CPU_STAT: Final[Path] = Path("/proc/stat")
-_TEMP0: Final[Path] = Path("/sys/class/thermal/thermal_zone0/temp")
+
+_TEMP0: Final[Path] = Path(
+    "/sys/class/thermal/thermal_zone0/temp"
+)
 _CPUFREQ_CUR: Final[Path] = Path(
     "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"
 )
@@ -34,10 +36,6 @@ _CPUFREQ_MAX: Final[Path] = Path(
     "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
 )
 _MEMINFO: Final[Path] = Path("/proc/meminfo")
-
-@bp.before_request
-def _auth() -> None:
-    require_token()
 
 # region Helpers
 def _clean(s: str) -> str:

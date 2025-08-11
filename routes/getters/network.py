@@ -10,7 +10,7 @@ Comandos relacionados con red y seguridad.
 
 # Librerias
 from flask import Blueprint, jsonify
-from utils.utils import run_cmd, require_token
+from utils.utils import run_cmd
 
 # Inicializa el blueprint
 bp = Blueprint("network", __name__)
@@ -42,7 +42,6 @@ def get_ip():
     """
     Devuelve la dirección IP local del sistema.
     """
-    require_token()
     return jsonify({"ip": get_info("ip")})
 
 
@@ -51,7 +50,6 @@ def get_gateway():
     """
     Devuelve la dirección IP del gateway predeterminado.
     """
-    require_token()
     return jsonify({"gateway": get_info("gateway")})
 
 
@@ -60,7 +58,6 @@ def get_open_ports():
     """
     Devuelve una lista de puertos TCP/UDP abiertos.
     """
-    require_token()
     return jsonify({"open_ports": get_info("open_ports")})
 
 
@@ -69,7 +66,6 @@ def get_failed_logins():
     """
     Devuelve los últimos intentos fallidos de login del sistema.
     """
-    require_token()
     return jsonify({"failed_logins": get_info("failed_logins")})
 
 
@@ -78,5 +74,6 @@ def get_all_network_info():
     """
     Devuelve toda la información de red en una sola respuesta.
     """
-    require_token()
-    return jsonify({key: get_info(key) for key in _NETWORK_COMMANDS})
+    return jsonify({
+        key: get_info(key) for key in _NETWORK_COMMANDS
+    })

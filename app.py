@@ -6,12 +6,13 @@ API para obtener datos y manipular la Raspberry Pi.
 from __future__ import annotations
 
 import logging
-from typing import Final
+from typing import Final, Optional
 
 from flask import Flask, Response, jsonify
 
 from config import NetworkConfig, load_settings
 from utils.blueprint_register import register_getters_blueprints
+from utils.utils import require_token
 
 from . import __version__
 
@@ -26,8 +27,20 @@ def create_app() -> Flask:
     :returns: Instancia de Flask con blueprints registrados.
     :rtype: Flask
     """
+    # carga las configuraciones
     cfg: NetworkConfig = load_settings()
+
+    # Crea la app
     app: Flask = Flask(__name__)
+
+    # Define la autenticación global para cualquier request
+    @app.before_request
+    def _auth_guard() -> Optional[Response]:
+        """Hook global de autenticación (Bearer obligatorio)."""
+        require_token()
+        return None
+
+    # Agrega los blueprints
     register_getters_blueprints(app)
 
     # Endpoints primigemios
@@ -41,7 +54,7 @@ def create_app() -> Flask:
         """Devuelve la version de la API."""
         return jsonify({"version": __version__})
 
-    # Configuraciones
+    # Configura el host y el port al que se va a escuchar
     app.config["HOST"] = cfg.host
     app.config["PORT"] = cfg.port
 
@@ -63,8 +76,17 @@ def main() -> None:
     port: int = app.config["PORT"]
 
     # Arranca la app
-    logging.info("Starting guardian-rpi-api %s on %s:%s", __version__, host, port)
-    app.run(host=host, port=port)
+    logging.info(
+        "Levantando servicio guardian-rpi-api %s on %s:%s",
+        __version__,
+        host,
+        port
+    )
+
+    app.run(
+        host=host,
+        port=port
+    )
 
 
 if __name__ == "__main__":

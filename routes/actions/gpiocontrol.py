@@ -6,7 +6,6 @@ Rutas para controlar pines GPIO
 from typing import List, Optional, Union
 from flask import Blueprint, jsonify, request
 from utils.gpio import GPIOController
-from utils.utils import require_token
 
 # Inicializa el blueprint
 bp: Blueprint = Blueprint("gpiocontrol", __name__)
@@ -18,9 +17,6 @@ def control_gpio(action: str):
 
     Requiere JSON en el body con `pins: List[int]`
     """
-
-    # Verifica el token
-    require_token()
 
     # Obtiene los datos
     data = request.get_json(force=True)

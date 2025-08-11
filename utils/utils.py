@@ -2,24 +2,48 @@ import hmac
 import shlex
 import subprocess
 from os import environ
-from typing import Literal, Union
+from typing import Final, Literal, Union
 from flask import request, abort
 
-API_TOKEN = environ.get("API_TOKEN")
+# Validacion del token
+API_TOKEN: Final[str] = environ.get("API_TOKEN", "").strip()
+if not API_TOKEN:
+    # Si no lo pilla, falla de una
+    raise RuntimeError("API_TOKEN no definido en el entorno.")
+
 
 def require_token() -> None:
     """
-    Autenticación por Bearer token en Authorization.
+    Exige *Bearer token* en el header ``Authorization``.
 
-    - Formato esperado: "Authorization: Bearer <token>"
-    - Comparación en tiempo constante para evitar timing attacks.
+    Formato requerido:
+        ``Authorization: Bearer <token>``
+
+    :raises werkzeug.exceptions.Forbidden:
+        Si falta el header/esquema, o el token no coincide.
     """
-    auth = request.headers.get("Authorization", "")
-    parts = auth.split(" ", 1)
-    if len(parts) != 2 or parts[0].lower() != "bearer" or not API_TOKEN:
+    # Obtiene el header (puede venir vacío si no lo enviaron)
+    auth_header: str = request.headers.get("Authorization", "")
+
+    # Divide en esquema y token. ``split(None, 1)`` usa cualquier
+    # whitespace, robusto ante "Bearer    <token>".
+    parts = auth_header.split(None, 1)
+
+    # Valida formato mínimo: "Bearer <token>"
+    if len(parts) != 2 or parts[0].lower() != "bearer":
         abort(403)
-    if not hmac.compare_digest(parts[1], API_TOKEN):
+
+    presented: str = parts[1].strip()
+    if not presented:
         abort(403)
+
+    # Comparación en tiempo constante
+    # Evita timing attacks
+    if not hmac.compare_digest(presented, API_TOKEN):
+        abort(403)
+
+    # Si pasa, no retornamos nada (HTTP continúa)
+    return None
 
 
 def run_cmd(cmd: str, timeout: float = 5.0) -> Union[str, Literal["error"]]:
@@ -37,7 +61,11 @@ def run_cmd(cmd: str, timeout: float = 5.0) -> Union[str, Literal["error"]]:
             timeout=timeout,
         )
         return out.decode("utf-8").strip()
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+    except (
+        subprocess.CalledProcessError,
+        subprocess.TimeoutExpired,
+        FileNotFoundError
+    ):
         return "error"
 
 
