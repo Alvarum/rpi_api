@@ -13,7 +13,7 @@
 }
 
 # Configs de la API
-:local token # ingresar aquí el token
+:local token #aqui apikey
 :local port "5000"
 :local endpoint "/guardian/data"
 :local url ("http://" . $pihost . ":" . $port . $endpoint)

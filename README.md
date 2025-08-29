@@ -8,6 +8,11 @@ Instala y ejecuta automáticamente el servicio de la API Flask para Raspberry Pi
 - Conexión a internet
 
 ## Instalación
+- Clona este repositorio a la ruta de app
+
+    ```bash
+    git clone https://github.com/Alvarum/rpi_api.git /home/pi/app/rpi_api
+
 - Crear el archivo .env con las variables de entorno en la carpeta del proyecto
 
         # Seguridad
@@ -28,6 +33,10 @@ Instala y ejecuta automáticamente el servicio de la API Flask para Raspberry Pi
 
     ```bash
     sudo systemctl status guardian-api
+
+
+## Mantención o depuración
+
 
 - Moverse a la carpeta de servicios
 
