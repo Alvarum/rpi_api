@@ -15,10 +15,20 @@ VENV_DIR="${PROJECT_DIR}/.venv"
 PYTHON_BIN="${VENV_DIR}/bin/python"
 APP_FILE="${PROJECT_DIR}/app.py"
 
+# Detecta el binario correcto de Python
+if command -v python3 &>/dev/null; then
+    PYTHON_BIN_SYS="python3"
+elif command -v python &>/dev/null; then
+    PYTHON_BIN_SYS="python"
+else
+    echo "[-] Error: No se encontró Python en el sistema."
+    exit 1
+fi
+
 # Crea el entorno virtual si no existe
 if [ ! -d "$VENV_DIR" ]; then
-    echo "[+] Creando entorno virtual en ${VENV_DIR}..."
-    python -m venv "$VENV_DIR"
+    echo "[+] Creando entorno virtual en ${VENV_DIR} con ${PYTHON_BIN_SYS}..."
+    "$PYTHON_BIN_SYS" -m venv "$VENV_DIR"
 fi
 
 # Instala dependencias si hay requirements.txt

@@ -18,11 +18,6 @@ Instala y ejecuta automáticamente el servicio de la API Flask para Raspberry Pi
         LOGS_PATH= ruta de los logs
         LOCK_FILE_PATH= ruta del archivo de bloqueo
 
-- Modificar el instalador con la siguiente información
-
-        PROJECT_DIR= ruta actual donde está el codigo
-
-
 - Crear el servicio
 
     ```bash
@@ -33,3 +28,29 @@ Instala y ejecuta automáticamente el servicio de la API Flask para Raspberry Pi
 
     ```bash
     sudo systemctl status guardian-api
+
+- Moverse a la carpeta de servicios
+
+    ```bash
+    cd /etc/systemd/system/
+
+- Ver los Logs
+
+    ```bash
+    journalctl -u guardian-api.service
+
+- Recargar los servicios
+
+    ```bash
+    sudo systemctl daemon-reload
+
+
+- Reiniciar el servicio
+
+    ```bash
+    sudo systemctl status guardian-api
+
+- Probar desde consola la API
+
+    ```bash
+    sudo -u pi   FLASK_APP=main:app   /home/pi/app/rpi_api-main/.venv/bin/python   -m flask run --host=0.0.0.0 --port=5000
