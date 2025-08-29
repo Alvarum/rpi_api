@@ -14,7 +14,7 @@ from config import NetworkConfig, load_settings
 from utils.blueprint_register import register_getters_blueprints
 from utils.utils import require_token
 
-from . import __version__
+from __init__ import __version__
 
 # Formato de los logs
 LOG_FMT: Final[str] = "%(asctime)s %(levelname)s %(name)s %(message)s"
