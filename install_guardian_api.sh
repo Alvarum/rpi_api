@@ -2,7 +2,7 @@
 
 #############################################################
 # Crea automaticamente el servicio para el api de guardian  #
-# Se valida luego con: sudo systemctl status guardian-api    #
+# Se valida luego con: sudo systemctl status guardian-api   #
 #############################################################
 
 # Nombre del servicio
